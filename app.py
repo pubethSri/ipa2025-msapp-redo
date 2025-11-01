@@ -1,33 +1,40 @@
-from flask import Flask
-from flask import request
-from flask import render_template
-from flask import redirect
-from flask import url_for
+from flask import Flask, request, render_template, redirect, url_for
+from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 sample = Flask(__name__)
 
-data = []
+client = MongoClient("mongodb://mongo:27017/")
+db = client.lab_db 
+devices_collection = db.devices
 
 @sample.route("/")
 def main():
-    return render_template("index.html", data=data)
+    all_devices = list(devices_collection.find())
+    
+    return render_template("index.html", data=all_devices)
 
-@sample.route("/add", methods=["POST"])
-def add_comment():
-    yourname = request.form.get("yourname")
-    message = request.form.get("message")
+@sample.route("/add_device", methods=["POST"])
+def add_device():
+    router_ip = request.form.get("router_ip")
+    username = request.form.get("username")
+    password = request.form.get("password")
 
-    if yourname and message:
-        data.append({"yourname": yourname, "message": message})
+    if router_ip and username and password:
+        devices_collection.insert_one({
+            "router_ip": router_ip,
+            "username": username,
+            "password": password
+        })
     return redirect(url_for("main"))
 
-@sample.route("/delete", methods=["POST"])
-def delete_comment():
+@sample.route("/delete_device", methods=["POST"])
+def delete_device():
     try:
-        idx = int(request.form.get("idx"))
-        if 0 <= idx < len(data):
-            data.pop(idx)
-    except Exception:
+        device_id_str = request.form.get("device_id")
+        devices_collection.delete_one({"_id": ObjectId(device_id_str)})
+    except Exception as e:
+        print(f"Error deleting device: {e}")
         pass
     return redirect(url_for("main"))
 

@@ -20,6 +20,6 @@ echo "EXPOSE 8080" >> tempdir/Dockerfile
 echo "CMD python3 /home/myapp/app.py" >> tempdir/Dockerfile
 
 cd tempdir
-docker build -t sampleapp .
-docker run -t -d -p 8080:8080 --name sampletest sampleapp
+docker build -t web .
+docker run -t -d -p 8080:8080 --name web web
 docker ps -a
