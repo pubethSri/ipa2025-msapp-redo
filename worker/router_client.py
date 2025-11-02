@@ -21,6 +21,8 @@ def get_interfaces(ip, username, password):
 
     print(json.dumps(result, indent=2))
 
+    return result
+
 
 if __name__=='__main__':
-    get_interfaces()
+    get_interfaces("10.0.15.61", "admin", "cisco")
