@@ -4,31 +4,36 @@
     <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
-    <h1>Register Router</h1>
     
-    <form method="POST" action="/add_device">
-    <input name="router_ip" placeholder="Router IP" required />
-    <input name="username" placeholder="Username" required />
-    <input name="password" placeholder="Password" type="password" required />
-    <button type="submit">Add Device</button>
-  </form>
+    <div class="container">
+        <h1>Register Router</h1>
+        
+        <form method="POST" action="/add_device">
+            <input name="router_ip" placeholder="Router IP" required />
+            <input name="username" placeholder="Username" required />
+            <input name="password" placeholder="Password" type="password" required />
+            <button type="submit" class="btn">Add Device</button>
+        </form>
 
-  <hr>
+        <hr>
 
-  <h2>Router List</h2>
+        <h2>Router List</h2>
 
-  <ul>
-    {% for device in data %}
-      <li>
-	       {{ device.router_ip }} - {{ device.username }}
-           
-           <form method="POST" action="{{ url_for('delete_device') }}" style="display:inline">
-           <input type="hidden" name="device_id" value="{{ device._id }}">
-           <button type="submit">Delete</button>
-         </form>
-      </li>
-    {% endfor %}
-  </ul>
+        <ul>
+            {% for device in data %}
+            <li>
+                <span>
+                    <a href="{{ url_for('router_detail', router_ip=device.router_ip) }}">{{ device.router_ip }}</a> - {{ device.username }}
+                </span>
+                
+                <form method="POST" action="{{ url_for('delete_device') }}" style="display:inline">
+                    <input type="hidden" name="device_id" value="{{ device._id }}">
+                    <button type="submit" class="btn btn-delete">Delete</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
 
 </body>
 </html>
