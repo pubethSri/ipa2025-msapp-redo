@@ -2,3 +2,4 @@ backup.sh
 running.txt
 user-input.sh
 tempdir/
+.env

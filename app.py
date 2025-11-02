@@ -1,17 +1,20 @@
+import os
 from flask import Flask, request, render_template, redirect, url_for
 from pymongo import MongoClient
-from bson.objectid import ObjectId
+from bson import ObjectId
 
 sample = Flask(__name__)
 
-client = MongoClient("mongodb://mongo:27017/")
-db = client.lab_db 
-devices_collection = db.devices
+mongo_uri  = os.environ.get("MONGO_URI")
+db_name    = os.environ.get("DB_NAME")
+
+client = MongoClient(mongo_uri)
+db = client[db_name]
+routers = db["routers"]
 
 @sample.route("/")
 def main():
-    all_devices = list(devices_collection.find())
-    
+    all_devices = list(routers.find())
     return render_template("index.html", data=all_devices)
 
 @sample.route("/add_device", methods=["POST"])
@@ -21,7 +24,7 @@ def add_device():
     password = request.form.get("password")
 
     if router_ip and username and password:
-        devices_collection.insert_one({
+        routers.insert_one({
             "router_ip": router_ip,
             "username": username,
             "password": password
@@ -32,7 +35,7 @@ def add_device():
 def delete_device():
     try:
         device_id_str = request.form.get("device_id")
-        devices_collection.delete_one({"_id": ObjectId(device_id_str)})
+        routers.delete_one({"_id": ObjectId(device_id_str)})
     except Exception as e:
         print(f"Error deleting device: {e}")
         pass
